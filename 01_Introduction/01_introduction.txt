@@ -1,0 +1,18 @@
+
+What is PostgreSql?
+--------------------
+* is a relation database system 
+* is a open source,fast, modern database
+* this is not only a typical RDBMS it it also a object relational database system
+* deleloper-friendly syntax and capabilities
+* this is also known as PostgreS or PG
+
+Why Postgres?
+-----------------
+* added advanced functionality on table, views functions
+* better compatibility or adaptibility on any backend technology like .NET
+* more powerfull and capabilities and mostly very easy and funny
+
+
+
+

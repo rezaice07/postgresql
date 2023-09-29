@@ -1,0 +1,36 @@
+Why should you care about postgres?
+-------------------------------------------
+* PostgreSQL implements a sophisticated technique to handle concurrent accesses that avoids locking: Multiversion Concurrency Control (MVCC)
+  On the other hand, sql server it is very pessimistic on production database.
+  
+* Compresssion and partioning, Con current indexing is by default, but in sql server is liesense issue which is very costly.
+
+* Fulltext searching is ready to go by default, but the sql server which is not supported on azure database. 
+
+* fascinating data types
+	- inet, array, ranges, json/jsobb, search like tsvector,tsquery, enum
+	but not in sql server database.
+ 
+* PostGIS Data Type
+	- PostGIS extends the capabilities of the PostgreSQL by adding support storing, indexing and querying geographic data.
+	
+* PostPic Data Type
+	- PostPic is an extension for the open source dbms PostgreSQL that enables image processing inside the databas
+	
+* NPM
+	- to run inside of postgres
+
+* Table Inheritance, Document storage like json/jsobb
+	- to support Table Inheritance and Document storage like json/jsobb
+	
+* Scalable
+
+* Open Source
+	- is a open source and has wide support community in the internet.
+	
+* Modern Database system
+	
+* Prominent Clients
+	- Skype, Disqus, Yahoo, reddit, Instagram 
+	
+	
