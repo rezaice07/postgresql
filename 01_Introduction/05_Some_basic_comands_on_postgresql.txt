@@ -1,0 +1,106 @@
+
+Most Basic Commands in PostgreSQL || How to swich or change one to another in postgresql || How to see list of database
+How to see list of tables || How to see list of database table description || 	How to see list of schemas || How to see list of functions, views	
+|| How to see list of users, roles || How to Check version of postgreSQL || How to Execute psql commands from a file ||
+How to Turn on query execution time || How to Get help on psql commands || How to Edit command in your own editor || How to Switch output options || How to Quit psql
+#Switch connection to a new database
+	- Syntax: \c dbname username
+	- Example:
+		postgres=# \c rejawebs reja
+		Password for user reja:
+		You are now connected to database "rejawebs" as user "reja".
+		rejawebs=#
+		
+#List available databases
+	- Syntax: \l
+	- Example:
+		postgres=# \l
+																			  List of databases
+		   Name    |  Owner   | Encoding | Locale Provider |          Collate           |           Ctype            | ICU Locale | ICU Rules |   Access privileges
+		-----------+----------+----------+-----------------+----------------------------+----------------------------+------------+-----------+-----------------------
+		 postgres  | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           |
+		 rejawebs  | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           |
+		 template0 | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           | =c/postgres          +
+				   |          |          |                 |                            |                            |            |           | postgres=CTc/postgres
+		 template1 | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           | =c/postgres          +
+				   |          |          |                 |                            |                            |            |           | postgres=CTc/postgres
+		(4 rows)	
+	
+#List available tables
+	- Syntax: \dt
+	- Example:
+		rejawebs-# \dt
+		List of relations
+		Schema |   Name    | Type  | Owner
+		--------+-----------+-------+-------
+		public | scm_store | table | reja
+		(1 row)	
+
+#Describe a table	
+	- Syntax: \d table_name
+	- Example:
+		rejawebs-# \d scm_store
+		Table "public.scm_store"
+		Column       |  Type  | Collation | Nullable | Default
+		-------------------+--------+-----------+----------+---------
+		scm_store_id      | bigint |           | not null |
+		scm_store_name_en | text   |           | not null |
+		created_date      | date   |           | not null |
+		Indexes:
+		"scm_store_pkey" PRIMARY KEY, btree (scm_store_id, created_date)
+		
+#List available schema
+	- To list all schemas of the currently connected database, you use the \dn command.
+	- Syntax: \dn
+	- Example:
+		rejawebs-# \dn
+		List of schemas
+		Name  |       Owner
+		--------+-------------------
+		public | pg_database_owner
+		rsc    | postgres
+		(2 rows)
+		
+#List available functions
+	- list available functions in the current database, you use the \df command.
+	- Syntax: \df
+
+#List available views
+	- To list available views in the current database, you use the \dv command.
+	- Syntax: \dv
+	
+#List users and their roles
+	- To list all users and their assign roles, you use \du command
+	- Syntax: \du
+	
+#Check version of postgreSQL
+	- To retrieve the current version of PostgreSQL server, you use the version() function as follows
+	- Syntax: SELECT version(); 
+		
+#Execute psql commands from a file
+	In case you want to execute psql commands from a file, you use \i command as follows:
+	- Syntax: \i path				
+	- Example: rejawebs-# \i 'D:/rs.sql';
+	
+#Get help on psql commands
+	To know all available psql commands, you use the \? command.
+	- Syntax:\?
+	
+#Turn on query execution time 
+	To turn on query execution time, you use the \timing command.
+	- Syntax: \timing
+	
+#Edit command in your own editor
+	- Syntax: \e
+	- Note: If we want to modify the function, just use the command -
+		\ef [function name]
+		
+#Switch output options
+	 \a command switches from aligned to non-aligned column output.
+	\H command formats the output to HTML format.
+	
+#Quit psql
+	- Syntax: \q
+	
+	
+--References: https://www.postgresqltutorial.com/postgresql-administration/psql-commands/
