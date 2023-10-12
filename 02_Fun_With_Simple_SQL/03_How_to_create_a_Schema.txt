@@ -1,0 +1,41 @@
+
+
+How to create a schema in postgresql || Creating a schema in postgresql || postgresql SCHEMA
+
+CREATE SCHEMA IF NOT EXISTS  MY_SCHEMA;
+
+CREATE TABLE IF NOT EXISTS MY_SCHEMA.users
+(
+    id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    first_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(50) COLLATE pg_catalog."default",
+    email character varying(50) COLLATE pg_catalog."default",
+    created_at timestamp with time zone DEFAULT the_time(),
+    CONSTRAINT users_pkey PRIMARY KEY (id),
+    CONSTRAINT users_first_name_key UNIQUE (first_name)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS MY_SCHEMA.users OWNER to postgres;
+
+DO $$ 
+BEGIN
+    FOR i IN 1..50 LOOP  
+        insert into MY_SCHEMA.users (first_name,last_name,email,created_at)
+		values(i||' Test pl/pgsql','user','testplpgsql@sample.com',now());
+    END LOOP;
+END $$;
+
+create or replace view MY_SCHEMA.top100_users as 
+select * from users 
+order by id asc
+limit 100;
+
+
+SELECT * FROM MY_SCHEMA.top100_users;
+
+
+SELECT  * from MY_SCHEMA.users;
+
+

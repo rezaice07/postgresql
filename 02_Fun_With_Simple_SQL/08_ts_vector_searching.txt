@@ -1,0 +1,106 @@
+
+#First we need to create a search_field column in users table with tsvector type
+ALTER TABLE USERS
+ADD search_field TSVECTOR NULL;
+
+#Let's update search_field column by tsvector
+update users set search_field= to_tsvector(concat(email ,' ',first_name,' ',last_name))
+
+#Now we will create a Trigger with the name of users_search_update_refresh on before insert or update action
+
+DROP TRIGGER IF EXISTS users_search_update_refresh ON public.users;
+
+CREATE OR REPLACE TRIGGER users_search_update_refresh
+    BEFORE INSERT OR UPDATE 
+    ON public.users
+    FOR EACH ROW
+    EXECUTE FUNCTION tsvector_update_trigger('search_field', 'pg_catalog.english', 'email', 'first_name', 'last_name');
+	
+#Let's check total columns in users table	
+select max(id)
+from users;
+
+--9000000
+
+#let's insert a new record into users table
+
+insert into users (id,first_name,last_name,email,created_at)
+values(9000001,'first name','last name','fl@sample.com',now());
+
+#let's try to filter in different search pattern bu using ts_query
+select *
+from users u
+where u.search_field @@ to_tsquery('first');
+
+--don't do this below one
+select *
+from users u
+where u.search_field @@ to_tsquery('first name');
+
+
+select *
+from users u
+where u.search_field @@ to_tsquery('fl@sample.com');
+
+select *
+from users u
+where u.search_field @@ to_tsquery('first:*');
+
+
+select *
+from users u
+where u.search_field @@ to_tsquery('fl:*');
+
+select *
+from users u
+where u.first_name @@ to_tsquery('first:*');
+
+select *
+from users u
+where u.first_name ||u.last_name @@ to_tsquery('firstnames')
+limit 100;
+
+select *
+from users u
+where u.search_field @@ to_tsquery('first | names')
+limit 100;
+
+select *
+from users u
+where u.search_field @@ to_tsquery('fl@:*')
+limit 100;
+
+
+select *
+from users u
+where u.search_field @@ to_tsquery('first | name')
+limit 100;
+
+
+select *
+from users u
+where u.search_field @@ to_tsquery('first & name')
+limit 100;
+
+
+select *
+from users u
+where u.search_field @@ to_tsquery('first & ! name')
+limit 100;
+
+
+--working with funsy text in postgresql
+select $$here "comes" some fun'sy text$$ 
+
+--let's convert it into tsvector
+select to_tsvector($$here "comes" some fun'sy text$$ )
+
+--or
+select ($$here "comes" some fun'sy text$$ )::tsvector
+
+select to_tsvector($$here "comes" some fun'sy text$$ ) @@ to_tsquery('here');
+				   
+select to_tsvector($$here "comes" some fun'sy text$$ ) @@ to_tsquery('not | listed');
+
+Hope you guys enjoy this video and don't forget to subscribe my channel.
+Thanks.

@@ -1,0 +1,42 @@
+
+#Now let's create table users
+
+drop table if exists users;
+
+create table users(
+	id serial not null primary key,
+	first_name varchar(50) not null unique,
+	last_name varchar(50),
+	email varchar(50),
+	created_at timestamptz default now()
+);
+
+insert into users (first_name,last_name,email)
+values ('Rejwanul', 'Reja', 'rezaice07@gmail.com');
+
+select * from users;
+
+***The value for created_at using function
+
+create or replace function the_time() returns timestamptz as
+$$
+	select now() as result;
+$$ language sql;
+
+drop table if exists users;
+
+create table users(
+	id serial not null primary key,
+	first_name varchar(50) not null unique,
+	last_name varchar(50),
+	email varchar(50),
+	created_at timestamptz default the_time()
+);
+
+insert into users (first_name,last_name,email)
+values ('Rejwanul', 'Reja', 'rezaice07@gmail.com');
+
+select * from users;
+
+
+

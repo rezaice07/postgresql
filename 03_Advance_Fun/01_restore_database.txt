@@ -1,0 +1,10 @@
+
+#First we need to down the PostgreSQL Sample Database by using the following link...
+	https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/
+
+
+
+Connect to Database
+
+
+Load Sample Database

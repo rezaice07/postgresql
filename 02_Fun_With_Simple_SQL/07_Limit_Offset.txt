@@ -1,0 +1,9 @@
+
+How to limit and paging in postgreSQL || limit and paging in postgreSQL || postgreSQL limit and paging 
+-------------------------------------------------------------------------------------------------------------
+select * from users
+limit 10 offset 0;
+
+
+select * from users
+limit 10 offset 10;

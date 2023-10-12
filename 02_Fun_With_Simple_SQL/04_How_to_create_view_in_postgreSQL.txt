@@ -1,0 +1,18 @@
+
+
+How to create view in postgreSQL || Create a view in postgreSQL || Drop view in postgreSQL
+----------------------------------------------------------------------------------------------
+create script:
+
+create or replace view top100_users as 
+select * from users 
+order by id asc
+limit 100;
+
+
+drop script:
+
+drop table pending_users;
+drop table if exists pending_users;
+
+ 

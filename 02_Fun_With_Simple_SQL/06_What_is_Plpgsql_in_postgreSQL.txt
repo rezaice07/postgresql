@@ -1,0 +1,22 @@
+
+What is Pl/pgsql in postgreSQL || how to use pl/pgsql in postgreSQL || postgreSQL pl/pgsql || how to raise notice in postgreSQL
+--------------------------------------------------------------------------------------------------------------------------------
+Tags: Concatenation,PL/pgSQL,dml, for, for loop,
+
+
+Concatenation
+----------------
+SELECT 'Hello, ' || 'World'; -- Output: Hello, World
+
+
+PL/pgSQL
+-------------
+DO $$ 
+DECLARE 
+    YOUR_VARIABLE INT := 1;  
+BEGIN
+    FOR counter IN 1..10 LOOP  -- Loop from 1 to 10
+        -- Your logic inside the loop goes here
+        RAISE NOTICE 'Current Counter Value: %', counter;  -- Print the counter value
+    END LOOP;
+END $$;

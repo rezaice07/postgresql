@@ -1,0 +1,4 @@
+
+What are the Datatypes in postgreSQL || What are the Datatypes and their use in postgreSQL || Datatypes in postgreSQL
+--------------------------------------------------------------------------------------------------------------------------
+int varchar nvarchar default serial text date timestamptz

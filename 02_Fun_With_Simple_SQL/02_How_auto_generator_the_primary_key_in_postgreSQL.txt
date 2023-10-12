@@ -1,0 +1,16 @@
+
+How auto generator the primary key in postgreSQL
+------------------------------------------------
+create table test_tab_pk_gen(
+	id serial primary key not null,
+	title varchar(100) not null unique
+);
+
+insert into test_tab_pk_gen (title) values('test_tab_pk_gen_1');
+insert into test_tab_pk_gen (title) values('test_tab_pk_gen_2');
+insert into test_tab_pk_gen (title) values('test_tab_pk_gen_3');
+
+select * from test_tab_pk_gen;
+
+
+
