@@ -1,0 +1,8 @@
+
+https://tableplus.com/blog/2018/04/postgresql-how-to-grant-access-to-users.html
+
+
+
+https://www.commandprompt.com/education/how-to-grant-all-privileges-to-users-in-postgresql/
+
+
