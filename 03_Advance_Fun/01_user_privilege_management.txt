@@ -1,8 +1,121 @@
 
-https://tableplus.com/blog/2018/04/postgresql-how-to-grant-access-to-users.html
+POSTGRES DBA - USER PRIVILEGE MANAGEMENT
+-----------------------------------------------
+REFERENCES:
+	https://www.youtube.com/watch?v=8YSp-wTELNs&ab_channel=databasetorque
+	https://tableplus.com/blog/2018/04/postgresql-how-to-grant-access-to-users.html
+	https://www.commandprompt.com/education/how-to-grant-all-privileges-to-users-in-postgresql/
+	
+#let's create role and user 
+
+	CREATE ROLE SALES PASSWORD 'sales';
+	CREATE USER USERA PASSWORD 'usera';
+	CREATE USER USERB PASSWORD 'userb'; WITH LOGIN;
+
+#let see the list of roles
+	\du
+
+#let's try to connect by using sales, usera and userb and will give different messages
+	PS C:\Users\Reja> psql -U sales;
+	Password for user sales:
+	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sales" is not permitted to log in
+
+
+	PS C:\Users\Reja> psql -U usera;
+	Password for user usera:
+	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  database "usera" does not exist
+
+	PS C:\Users\Reja> psql -U userb;
+	Password for user userb:
+	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  database "userb" does not exist
+
+# A Connection by using the database for the users usera and userb
+	PS C:\Users\Reja> psql -U usera -d postgres;
+	Password for user usera:
+	psql (16.0)
+	WARNING: Console code page (437) differs from Windows code page (1252)
+			 8-bit characters might not work correctly. See psql reference
+			 page "Notes for Windows users" for details.
+	Type "help" for help.
+
+	postgres=> \q
+	PS C:\Users\Reja> psql -U userb -d postgres;
+	Password for user userb:
+	psql (16.0)
+	WARNING: Console code page (437) differs from Windows code page (1252)
+			 8-bit characters might not work correctly. See psql reference
+			 page "Notes for Windows users" for details.
+	Type "help" for help.
+	
+	
+	
+# Let's try to create a databas by using user USERA
+
+	PS C:\Users\Reja> psql -U usera -d postgres;
+
+	postgres=> CREATE DATABASE TESTDB;
+	ERROR:  permission denied to create database
+
+
+	PS C:\Users\Reja> psql -U postgres -d postgres;
+	Password for user postgres:
+	psql (16.0)
+	WARNING: Console code page (437) differs from Windows code page (1252)
+			 8-bit characters might not work correctly. See psql reference
+			 page "Notes for Windows users" for details.
+	Type "help" for help.
+
+# Let's create a database by the superuser POSTGRES
+	PS C:\Users\Reja> psql -U postgres -d postgres;
+	postgres=# CREATE DATABASE TESTDB;
+	CREATE DATABASE
+
+	PS C:\Users\Reja> psql -U usera -d testdb;
+	Password for user usera:
+	psql (16.0)
+	WARNING: Console code page (437) differs from Windows code page (1252)
+			 8-bit characters might not work correctly. See psql reference
+			 page "Notes for Windows users" for details.
+	Type "help" for help.
+
+#Now we'll revoke public access from databas testdb by superuser postgres	
+	PS C:\Users\Reja> psql -U postgres -d postgres;
+
+	postgres=# revoke all on database testdb from public;
+	REVOKE
+
+#let's try to login user usera and it will show the error
+	postgres=# \q
+	PS C:\Users\Reja> psql -U usera -d testdb;
+	Password for user usera:
+	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  permission denied for database "testdb"
+	DETAIL:  User does not have CONNECT privilege.
 
 
 
-https://www.commandprompt.com/education/how-to-grant-all-privileges-to-users-in-postgresql/
+#We have a role SALES and will assign to user USERA and USERB by superuser
 
+PS C:\Users\Reja> psql -U postgres -d postgres;
+
+	postgres=# GRANT SALES TO USERA;
+	GRANT ROLE
+	postgres=# GRANT SALES TO USERB;
+	GRANT ROLE
+
+#Now we will give connect permission to role sales
+	postgres=# GRANT CONNECT ON DATABASE TESTDB TO SALES;
+	GRANT
+	
+#Let's try to login	
+	postgres=# \q
+	PS C:\Users\Reja> psql -U usera -d testdb;
+	Password for user usera:
+	psql (16.0)
+	WARNING: Console code page (437) differs from Windows code page (1252)
+			 8-bit characters might not work correctly. See psql reference
+			 page "Notes for Windows users" for details.
+	Type "help" for help.
+	
+	
+Last seen 16 mins
 
