@@ -8,9 +8,9 @@ REFERENCES:
 	
 #let's create role and user 
 
-	CREATE ROLE SALES PASSWORD 'sales';
-	CREATE USER USERA PASSWORD 'usera';
-	CREATE USER USERB WITH LOGIN PASSWORD 'userb';
+	CREATE ROLE SALES PASSWORD '123';
+	CREATE USER USERA PASSWORD '123';
+	CREATE USER USERB WITH LOGIN PASSWORD '123';
 
 #let see the list of roles
 	\du
@@ -19,7 +19,6 @@ REFERENCES:
 	PS C:\Users\Reja> psql -U sales;
 	Password for user sales:
 	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sales" is not permitted to log in
-
 
 	PS C:\Users\Reja> psql -U usera;
 	Password for user usera:
@@ -31,23 +30,12 @@ REFERENCES:
 
 # A Connection by using the database for the users usera and userb
 	PS C:\Users\Reja> psql -U usera -d postgres;
-	Password for user usera:
-	psql (16.0)
-	WARNING: Console code page (437) differs from Windows code page (1252)
-			 8-bit characters might not work correctly. See psql reference
-			 page "Notes for Windows users" for details.
-	Type "help" for help.
-
 	postgres=> \q
 	PS C:\Users\Reja> psql -U userb -d postgres;
-	Password for user userb:
-	psql (16.0)
-	WARNING: Console code page (437) differs from Windows code page (1252)
-			 8-bit characters might not work correctly. See psql reference
-			 page "Notes for Windows users" for details.
-	Type "help" for help.
 	
-	
+	**Note: In this case, don't have any permissions on postgres db for user usera and userb
+	So how they conncted using database postgres?
+	Answer is implicit public
 	
 # Let's try to create a databas by using user USERA
 
@@ -56,27 +44,12 @@ REFERENCES:
 	postgres=> CREATE DATABASE TESTDB;
 	ERROR:  permission denied to create database
 
-
-	PS C:\Users\Reja> psql -U postgres -d postgres;
-	Password for user postgres:
-	psql (16.0)
-	WARNING: Console code page (437) differs from Windows code page (1252)
-			 8-bit characters might not work correctly. See psql reference
-			 page "Notes for Windows users" for details.
-	Type "help" for help.
-
 # Let's create a database by the superuser POSTGRES
 	PS C:\Users\Reja> psql -U postgres -d postgres;
 	postgres=# CREATE DATABASE TESTDB;
 	CREATE DATABASE
 
 	PS C:\Users\Reja> psql -U usera -d testdb;
-	Password for user usera:
-	psql (16.0)
-	WARNING: Console code page (437) differs from Windows code page (1252)
-			 8-bit characters might not work correctly. See psql reference
-			 page "Notes for Windows users" for details.
-	Type "help" for help.
 
 #Now we'll revoke public access from databas testdb by superuser postgres	
 	PS C:\Users\Reja> psql -U postgres -d postgres;
@@ -91,8 +64,20 @@ REFERENCES:
 	psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  permission denied for database "testdb"
 	DETAIL:  User does not have CONNECT privilege.
 
+#Now we'll give connect permission to user usera
+	PS C:\Users\Reja> psql -U postgres -d postgres;
 
+	postgres=# GRANT CONNECT ON DATABASE testdb TO usera;
+	GRANT
+	
+	PS C:\Users\Reja> psql -U usera -d testdb;
+	
+#Now we'll revoke public access from databas testdb by superuser postgres	again
+	PS C:\Users\Reja> psql -U postgres -d postgres;
 
+	postgres=# revoke all on database testdb from public;
+	REVOKE	
+	
 #We have a role SALES and will assign to user USERA and USERB by superuser
 
 PS C:\Users\Reja> psql -U postgres -d postgres;
@@ -109,27 +94,21 @@ PS C:\Users\Reja> psql -U postgres -d postgres;
 #Let's try to login	
 	postgres=# \q
 	PS C:\Users\Reja> psql -U usera -d testdb;
-	Password for user usera:
-	psql (16.0)
-	WARNING: Console code page (437) differs from Windows code page (1252)
-			 8-bit characters might not work correctly. See psql reference
-			 page "Notes for Windows users" for details.
-	Type "help" for help.
 	
 #Let's connect to the user usera and try to add database schema and so on
 	psql -U usera -d testdb;
 
-testdb=> CREATE DATABASE TESTDB2;
-ERROR:  permission denied to create database
-testdb=> CREATE SCHEMA MY_SCHEMA;
-ERROR:  permission denied for database testdb
-testdb=> CREATE TABLE TEST_TAB(ID NUMBER,TITLE TEXT);
-ERROR:  permission denied for schema public
-LINE 1: CREATE TABLE TEST_TAB(ID NUMBER,TITLE TEXT);
-                     ^
-testdb=> CREATE USER TEST_USER WITH LOGIN PASSWORD '123';
-ERROR:  permission denied to create role
-DETAIL:  Only roles with the CREATEROLE attribute may create roles.
+	testdb=> CREATE DATABASE TESTDB2;
+	ERROR:  permission denied to create database
+	testdb=> CREATE SCHEMA MY_SCHEMA;
+	ERROR:  permission denied for database testdb
+	testdb=> CREATE TABLE TEST_TAB(ID int,TITLE TEXT);
+	ERROR:  permission denied for schema public
+	LINE 1: CREATE TABLE TEST_TAB(ID int,TITLE TEXT);
+						 ^
+	testdb=> CREATE USER TEST_USER WITH LOGIN PASSWORD '123';
+	ERROR:  permission denied to create role
+	DETAIL:  Only roles with the CREATEROLE attribute may create roles.
 
 #let's connect with the superuser  and connect to the databas testdb and revoke all the public schema permission from implicit public. let's do it
 	psql -U postgres -d postgres;
@@ -137,86 +116,57 @@ DETAIL:  Only roles with the CREATEROLE attribute may create roles.
 	testdb=# revoke all on schema public from public;
 	REVOKE
 	
-#Now connect with the usera user
-psql -U usera -d testdb;
-testdb=> CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
-ERROR:  no schema has been selected to create in
-LINE 1: CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
-                     ^
-testdb=> show search_path;
-   search_path
------------------
- "$user", public
-(1 row)
+#Grant CREATE TABLE Permission on a Specific Schema:
+	testdb=# GRANT CREATE ON SCHEMA public TO sales;
+	
+#Grant CREATE TABLE Permission on the Entire Database:
+	testdb=# GRANT CREATE ON DATABASE testdb TO sales;
+	
+#Grant DML permission on specific schema to rolse
+	testdb=# GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sales;
+	
+#Grant all privileges on all tables in the schema:	
+	testdb=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO sales;
+	
+# Grant all privileges on all sequences in the schema:	
+	testdb=# GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO sales;
+	
+#Grant all privileges on the database:	
+	testdb=# GRANT ALL PRIVILEGES ON DATABASE database_name TO sales;
+	
+#Grant permission to create database:	
+	testdb=# ALTER USER usera CREATEDB;
+	
+#Make a user superuser:	
+	testdb=# ALTER USER usera WITH SUPERUSER;
 
-testdb=> CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
-ERROR:  no schema has been selected to create in
-LINE 1: CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
+#Remove superuser status:	
+	testdb=# ALTER USER usera WITH NOSUPERUSER;
+	
+#Those statements above only affect the current existing tables. 
+To apply to newly created tables, you need to use alter default. For example:
+	
+	testdb=# ALTER DEFAULT PRIVILEGES
+	FOR USER usera
+	IN SCHEMA public
+	GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO sales;
+
+#Check Schema
+	testdb=> show search_path;
+	   search_path
+	-----------------
+	 "$user", public
+	(1 row)
                      ^
-testdb=> CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
-ERROR:  permission denied for schema public
-LINE 1: CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
-                     ^
+	testdb=> CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
+	ERROR:  permission denied for schema public
+	LINE 1: CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
+
+#Check current schema
+	postgres=# select current_user;
+	 current_user
+	--------------
+	 postgres
+	(1 row)
+						 ^
 #schema: is a logical container;
-
-testdb=> select count(*) from test_tab;
-ERROR:  relation "test_tab" does not exist
-LINE 1: select count(*) from test_tab;
-                             ^
-testdb=> select count(*) from test_tab;
-ERROR:  relation "test_tab" does not exist
-LINE 1: select count(*) from test_tab;
-                             ^
-testdb=>  select count(*) from test_tab;
-ERROR:  permission denied for table test_tab
-testdb=>  select count(*) from public.test_tab;
-ERROR:  permission denied for table test_tab
-testdb=> \d
-          List of relations
- Schema |   Name   | Type  |  Owner
---------+----------+-------+----------
- public | test_tab | table | postgres
-(1 row)
-
-testdb=> alter table test_tab rename to tab_test;
-ERROR:  must be owner of table test_tab
-testdb=>
-
-psql -U postgres -d postgres;
-                 ^
-postgres=# select current_user;
- current_user
---------------
- postgres
-(1 row)
-
-
-postgres=# \c testdb;
-
-testdb=# select * from test_tab;
-ERROR:  relation "test_tab" does not exist
-LINE 1: select * from test_tab;
-                      ^
-testdb=# CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
-CREATE TABLE
-testdb=# select count(*) from test_tab;
- count
--------
-     0
-(1 row)
-
-#Now we will give permission to users or upper level role. let's see
-
-psql -U postgres -d postgres;
-postgres=# \c testdb;
-You are now connected to database "testdb" as user "postgres".
-testdb=# grant usage on schema public to sales;
-GRANT
-testdb=# grant create on schema public to sales;
-GRANT
-testdb=# alter table test_tab rename to tab_test;
-ALTER TABLE
-testdb=# alter table tab_test rename to test_tab;
-ALTER TABLE
-testdb=#
-
