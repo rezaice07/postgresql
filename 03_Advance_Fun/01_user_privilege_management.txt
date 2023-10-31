@@ -116,17 +116,8 @@ PS C:\Users\Reja> psql -U postgres -d postgres;
 			 page "Notes for Windows users" for details.
 	Type "help" for help.
 	
-	
-Last seen 16 mins
-
-
-PS C:\Users\Dev> psql -U usera -d testdb;
-Password for user usera:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
+#Let's connect to the user usera and try to add database schema and so on
+	psql -U usera -d testdb;
 
 testdb=> CREATE DATABASE TESTDB2;
 ERROR:  permission denied to create database
@@ -139,50 +130,15 @@ LINE 1: CREATE TABLE TEST_TAB(ID NUMBER,TITLE TEXT);
 testdb=> CREATE USER TEST_USER WITH LOGIN PASSWORD '123';
 ERROR:  permission denied to create role
 DETAIL:  Only roles with the CREATEROLE attribute may create roles.
-testdb=> CREATE TABLE TEST_TAB(ID INT,TITLE TEXT);
-ERROR:  permission denied for schema public
-LINE 1: CREATE TABLE TEST_TAB(ID INT,TITLE TEXT);
-                     ^
-testdb=> CREATE TABLE TEST_TAB(ID INT);
-ERROR:  permission denied for schema public
-LINE 1: CREATE TABLE TEST_TAB(ID INT);
-                     ^
-testdb=> \c postgres
-You are now connected to database "postgres" as user "usera".
-postgres=> REVOKE ALL ON SCHEMA PUBLIC FROM PUBLIC;
-WARNING:  no privileges could be revoked for "public"
-REVOKE
-postgres=> REVOKE ALL ON SCHEMA  FROM PUBLIC;
-ERROR:  relation "schema" does not exist
 
-
-
-
-
-
-PS C:\Users\Dev> psql -U postgres -d postgres;
-Password for user postgres:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
-
-postgres=# \c testdb
-You are now connected to database "testdb" as user "postgres".
-testdb=# revoke all on public from public;
-ERROR:  relation "public" does not exist
-testdb=# revoke all on schema public from public;
-REVOKE
-testdb=# \q
-PS C:\Users\Dev> psql -U usera -d testdb;
-Password for user usera:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
-
+#let's connect with the superuser  and connect to the databas testdb and revoke all the public schema permission from implicit public. let's do it
+	psql -U postgres -d postgres;
+	postgres=# \c testdb
+	testdb=# revoke all on schema public from public;
+	REVOKE
+	
+#Now connect with the usera user
+psql -U usera -d testdb;
 testdb=> CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
 ERROR:  no schema has been selected to create in
 LINE 1: CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
@@ -193,7 +149,6 @@ testdb=> show search_path;
  "$user", public
 (1 row)
 
-
 testdb=> CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
 ERROR:  no schema has been selected to create in
 LINE 1: CREATE TABLE TEST_TAB(ID INT, TITLE TEXT);
@@ -202,16 +157,7 @@ testdb=> CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
 ERROR:  permission denied for schema public
 LINE 1: CREATE TABLE public.TEST_TAB(ID INT, TITLE TEXT);
                      ^
-testdb=> schema: is a logical container;
-ERROR:  syntax error at or near "schema"
-LINE 1: schema: is a logical container;
-        ^
-testdb=> select current_user;
- current_user
---------------
- usera
-(1 row)
-
+#schema: is a logical container;
 
 testdb=> select count(*) from test_tab;
 ERROR:  relation "test_tab" does not exist
@@ -232,29 +178,11 @@ testdb=> \d
  public | test_tab | table | postgres
 (1 row)
 
-
 testdb=> alter table test_tab rename to tab_test;
 ERROR:  must be owner of table test_tab
 testdb=>
 
-
-
-Windows PowerShell
-Copyright (C) Microsoft Corporation. All rights reserved.
-
-Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
-
-PS C:\Users\Dev> psql -U postgres -d postgres;
-Password for user postgres:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
-
-postgres=# select * current_user;
-ERROR:  syntax error at or near "current_user"
-LINE 1: select * current_user;
+psql -U postgres -d postgres;
                  ^
 postgres=# select current_user;
  current_user
@@ -264,7 +192,7 @@ postgres=# select current_user;
 
 
 postgres=# \c testdb;
-You are now connected to database "testdb" as user "postgres".
+
 testdb=# select * from test_tab;
 ERROR:  relation "test_tab" does not exist
 LINE 1: select * from test_tab;
@@ -277,32 +205,18 @@ testdb=# select count(*) from test_tab;
      0
 (1 row)
 
+#Now we will give permission to users or upper level role. let's see
 
-testdb=# Now we will give permission to users or upper level role. let's see
-testdb'# ;
-testdb'# grant usage on schema public to sales;
-testdb'# \q
-Use control-C to quit.
-testdb'# \q
-Use control-C to quit.
-testdb'# \q
-PS C:\Users\Dev> psql -U postgres -d postgres;
-Password for user postgres:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
-
+psql -U postgres -d postgres;
 postgres=# \c testdb;
 You are now connected to database "testdb" as user "postgres".
 testdb=# grant usage on schema public to sales;
 GRANT
 testdb=# grant create on schema public to sales;
 GRANT
-testdb=#  alter table test_tab rename to tab_test;
+testdb=# alter table test_tab rename to tab_test;
 ALTER TABLE
-testdb=#  alter table tab_test rename to test_tab;
+testdb=# alter table tab_test rename to test_tab;
 ALTER TABLE
 testdb=#
 
