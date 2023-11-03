@@ -1,0 +1,33 @@
+
+
+Postgres - Generate Series | Random | Trunc function
+--------------------------------------------------------
+#generate series with interval
+	select generate_series(0,100,2);
+#Reversing	
+	select generate_series(100,0,-1);
+	
+#generate using function use
+	select x
+	from generate_series(1,100,1) as f(x);
+	
+#Generating Dates
+	select x 
+	from generate_series('01-Jan-2023'::timestamp,'31-Dec-2023'::timestamp,'1 days') as f(x);
+	
+#Random
+	select x
+	from random() as f(x);
+	
+	select x*1000+1
+	from random() as f(x);
+	
+	***md5 encryption
+	select md5((x*1000+1)::text)
+	from random() as f(x);
+	
+#Truncate	
+	select 729.4833893906903 as num, trunc(729.4833893906903);
+
+	
+	

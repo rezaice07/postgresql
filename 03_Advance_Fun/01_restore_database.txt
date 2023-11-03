@@ -28,17 +28,7 @@ give privileges - GRANT ALL PRIVILEGES ON DATABASE mydatabase1 TO user1
 psql -U rejawebs -W
 
 PS C:\Users\Dev> psql -d postgres -U postgres -W
-Password:
-psql (16.0)
-WARNING: Console code page (437) differs from Windows code page (1252)
-         8-bit characters might not work correctly. See psql reference
-         page "Notes for Windows users" for details.
-Type "help" for help.
 
-postgres=# create database;
-ERROR:  syntax error at or near ";"
-LINE 1: create database;
-                       ^
 postgres=# CREATE DATABASE dvdrental;
 CREATE DATABASE
 postgres=# exit

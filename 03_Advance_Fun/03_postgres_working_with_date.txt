@@ -1,34 +1,132 @@
-select *
-from payment p
+Postgresql - Working with date formatting
+---------------------------------------------
+#Day formatting
+	select to_char(p.payment_date,'DD') payment_day
+	from payment p
+	where 1=1
+	limit 50;
 
-select *
-from payment p
-where p.payment_date between '15-Feb-2007' and '16-Feb-2007';
+	**attn: don;t do like below....
+	select to_char(p.payment_date,'D') payment_day
+	from payment p
+	where 1=1
+	limit 50;
 
-select *
-from payment p
-where p.payment_date between '15-Feb-2007':: date and '16-Feb-2007':: date;
+	**Attn: Always try with 'DD' or 'dd'
 
---error will show
-select *
-from payment p
-where date_gt(p.payment_date , '15-Feb-2007' );
+#Month Formatting
+	select to_char(p.payment_date,'MM') payment_Month
+	from payment p
+	where 1=1
+	limit 50;
 
-select *
-from payment p
-where date_gt(p.payment_date::date , '15-Feb-2007':: date );
+	select to_char(p.payment_date,'Mon') payment_Month
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'Month') payment_Month
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'MON') payment_Month
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'MONTH') payment_Month
+	from payment p
+	where 1=1
+	limit 50;
+
+#Year Formatting
+	select to_char(p.payment_date,'YYYY') payment_Year
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'YY') payment_Year
+	from payment p
+	where 1=1
+	limit 50;
+
+#Time Formatting
+	select p.payment_date,to_char(p.payment_date,'HH24:MI:SS AM') payment_Time_24_HOUR,to_char(p.payment_date,'HH12:MI:SS AM') payment_Time_12_HOUR
+	from payment p
+	where 1=1
+	limit 50;
+
+#Date Truncating
+	select p.payment_date,trunc(p.payment_date) payment_date_trunc
+	from payment p
+	where 1=1
+	limit 50;
+
+#Real use of date formatting
+	select to_char(p.payment_date,'DD/MM/YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-MM-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-mon-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-Mon-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-MON-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-Month-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+	select to_char(p.payment_date,'DD-MONTH-YYYY') payment_date
+	from payment p
+	where 1=1
+	limit 50;
+
+#Converting string or text to date
+	SELECT TO_DATE('15-Jun-1986','dd-Mon-yyyy') to_date
+
+#In PostgreSQL, if you have a timestamp column and you want to exclude the time part,  Here's how you can do it
+	select now() as current_date,now()::date truncated_date
+
+	select *
+	from payment p
+	where p.payment_date between '15-Feb-2007' and now():: date;
+
+#error will show
+	select *
+	from payment p
+	where date_gt(p.payment_date , '15-Feb-2007' );
+
+	select *
+	from payment p
+	where date_gt(p.payment_date::date , '15-Feb-2007':: date );
 
 
---quarter
-select p.amount,
-p.payment_date,
-date_part('quarter',p.payment_date) quarter
-from payment p;
+#quarter
+	select p.amount,
+	p.payment_date,
+	date_part('quarter',p.payment_date) quarter
+	from payment p;
 
-
-
---year
-select p.amount,
-p.payment_date,
-date_part('year',p.payment_date) pyear
-from payment p;
+#year
+	select p.amount,
+	p.payment_date,
+	date_part('year',p.payment_date) pyear
+	from payment p;
